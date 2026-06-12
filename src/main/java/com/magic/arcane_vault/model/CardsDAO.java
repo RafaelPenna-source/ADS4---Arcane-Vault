@@ -27,6 +27,12 @@ public class CardsDAO {
 
 
     public void inserirCarta(Cards card, int idColecao) {
+        if (idColecao <= 0) {
+            idColecao = jdbc.queryForObject(
+                "SELECT id_colecao FROM colecoes LIMIT 1",
+                Integer.class
+            );
+        }
         Integer idCartaBanco;
 
         // 1. Tenta encontrar a carta abstrata no banco
