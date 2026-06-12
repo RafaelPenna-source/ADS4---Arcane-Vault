@@ -24,7 +24,7 @@ public class MainController {
     @Autowired
     private com.magic.arcane_vault.service.ScryfallService scryfallService;
 
-    @GetMapping("/home")
+    @GetMapping("/")
     public String index(Model model) {
         int idUsuarioLogado = 1; 
         java.util.Map<String, Object> resumo = cardsService.obterResumoColecao(idUsuarioLogado);
