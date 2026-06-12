@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcane Vault | Minha Coleção</title>
+  <link rel="stylesheet" th:href="@{/magic-theme.css}" />
+  <link rel="icon" type="image/x-icon" th:href="@{/arcane_vault_icon.svg}">
+  <style>
+    .visual-card-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(255, 170, 0, 0.2);
+      border-color: rgba(255, 170, 0, 0.4) !important;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" th:href="@{/home}" aria-label="Arcane Vault - Página inicial">
+      <span class="logo-mark">A</span>
+      <span>
+        <strong>Arcane Vault</strong>
+        <small>Minha coleção</small>
+      </span>
+    </a>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a th:href="@{/home}">Início</a>
+      <a href="#cadastro-carta">Cadastrar carta</a>
+      <a href="#lista-cartas">Cartas salvas</a>
+    </nav>
+    <div class="topbar-actions">
+      <a class="ghost-button" th:href="@{/login}">Sair</a>
+    </div>
+  </header>
+  <main>
+    <section class="page-title-section">
+      <p class="eyebrow">Gerenciamento</p>
+      <h1>Crie e organize sua coleção.</h1>
+      <p>
+        Cadastre cartas com nome, raridade, tipo e custo de mana separado por cor.
+        Esta versão não usa valor financeiro, deixando o projeto mais simples para integração em Java.
+      </p>
+    </section>
+    <section class="form-section" id="cadastro-carta" aria-labelledby="cadastro-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Cadastro</p>
+          <h2 id="cadastro-title">Nova carta</h2>
+        </div>
+      </div>
+      <div class="field-group wide" style="margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+        <label for="scryfall-search"><strong>Importar via Scryfall (Preenchimento Automático)</strong></label>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="scryfall-search" placeholder="Digite o nome em inglês (Ex: Sol Ring ou Lightning Bolt)..." style="flex: 1;" />
+          <button type="button" class="mini-button" onclick="importarDoScryfall()" style="white-space: nowrap;">Buscar Dados</button>
+        </div>
+        <div id="container-edicoes" style="display: none; margin-top: 15px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,170,0,0.2);">
+          <label for="scryfall-select-edicao" style="color: #ffaa00; font-size: 0.85rem; display: block; margin-bottom: 6px; font-weight: bold;">
+            ✨ Outras edições desta carta encontradas:
+          </label>
+          <select id="scryfall-select-edicao" onchange="alterarEdicaoScryfall()" style="width: 100%; padding: 10px; background: #130924; color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; font-size: 0.9rem; cursor: pointer;">
+          </select>
+        </div>
+        <small id="scryfall-status" style="color: #ffaa00; display: block; margin-top: 5px;"></small>
+      </div>
+      <form class="card-form" th:action="@{/colecao/salvar}" th:object="${novaCarta}" method="post">
+        <div class="form-grid">
+          <div class="field-group wide">
+            <label for="nome-carta">Nome da carta</label>
+            <input th:field="*{nomeCarta}" type="text" placeholder="Ex.: Sol Ring" required />
+          </div>
+          <div class="field-group">
+            <label for="raridade">Raridade</label>
+            <select th:field="*{idRaridade}" id="idRaridade" required>
+              <option value="">Selecione</option>
+              <option value="1">Comum</option>
+              <option value="2">Incomum</option>
+              <option value="3">Rara</option>
+              <option value="4">Mítica</option>
+              <option value="5">Especial</option>
+              <option value="6">Token</option>
+              <option value="7">Promo</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="tipo">Tipo</label>
+            <select th:field="*{idTipo}" id="idTipo" required>
+              <option value="">Selecione</option>
+              <option value="1">Criatura</option>
+              <option value="2">Feitiço</option>
+              <option value="3">Mágica Instantânea</option>
+              <option value="4">Artefato</option>
+              <option value="5">Encantamento</option>
+              <option value="6">Terreno</option>
+              <option value="7">Planeswalker</option>
+              <option value="8">Batalha</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="quantidade">Quantidade</label>
+            <input th:field="*{quantidade}" type="number" min="1" required />
+          </div>
+          <div class="field-group">
+            <label for="edicao">Edição / coleção</label>
+            <input th:field="*{edicao}" type="text" placeholder="Ex.: Dominaria Remastered" />
+          </div>
+          <div class="field-group">
+            <label for="supertipo">Supertipo</label>
+            <input th:field="*{supertipo}" type="text" placeholder="Ex.: Lendária, Básica" />
+          </div>
+        </div>
+        <div class="form-grid" id="atributos-criatura" style="display: none; margin-top: 15px;">
+          <div class="field-group">
+            <label for="poder">Poder (Power)</label>
+            <input th:field="*{poder}" type="text" placeholder="Ex: 2, 4, *" />
+          </div>
+          <div class="field-group">
+            <label for="resistencia">Resistência (Toughness)</label>
+            <input th:field="*{resistencia}" type="text" placeholder="Ex: 3, *, 1+*" />
+          </div>
+        </div>
+        <input type="hidden" th:field="*{urlImagem}" id="urlImagem" />
+        <input type="hidden" th:field="*{codigoSet}" id="codigoSet" />
+        <input type="hidden" th:field="*{codigoVariante}" id="codigoVariante" />
+        <fieldset class="mana-fieldset">
+          <legend>Custo de mana separado por cor</legend>
+          <div class="mana-grid">
+            <div class="field-group mana-field white-mana">
+              <label for="custo-branco">Branco</label>
+              <input th:field="*{custoBranco}" type="number" min="0" />
+            </div>
+            <div class="field-group mana-field blue-mana">
+              <label for="custo-azul">Azul</label>
+              <input th:field="*{custoAzul}" type="number" min="0" />
+            </div>
+            <div class="field-group mana-field black-mana">
+              <label for="custo-preto">Preto</label>
+              <input th:field="*{custoPreto}" type="number" min="0" />
+            </div>
+            <div class="field-group mana-field red-mana">
+              <label for="custo-vermelho">Vermelho</label>
+              <input th:field="*{custoVermelho}" type="number" min="0" />
+            </div>
+            <div class="field-group mana-field green-mana">
+              <label for="custo-verde">Verde</label>
+              <input th:field="*{custoVerde}" type="number" min="0" />
+            </div>
+            <div class="field-group mana-field colorless-mana">
+              <label for="custo-incolor">Incolor</label>
+              <input th:field="*{custoIncolor}" type="number" min="0" />
+            </div>
+          </div>
+        </fieldset>
+        <div class="field-group">
+          <label for="texto-regra">Texto / efeito da carta</label>
+          <textarea th:field="*{textoRegra}" rows="4" placeholder="Descreva o efeito da carta..."></textarea>
+        </div>
+        <div class="field-group">
+          <label for="observacoes">Observações</label>
+          <textarea th:field="*{observacoes}" rows="3" placeholder="Estado da carta, idioma, pasta onde está guardada etc."></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="primary-button" type="submit">Salvar carta</button>
+          <button class="secondary-button" type="reset">Limpar formulário</button>
+        </div>
+      </form>
+    </section>
+    <section class="search-section" aria-labelledby="busca-title">
+      <div>
+        <p class="eyebrow">Busca</p>
+        <h2 id="busca-title">Pesquisar na coleção</h2>
+      </div>
+      <form class="search-form" th:action="@{/colecao/buscar}" method="get">
+        <label class="sr-only" for="buscar-carta">Buscar carta</label>
+        <input id="buscar-carta" name="busca" type="search" th:value="${busca}" placeholder="Buscar por nome da carta..." />
+        <button type="submit">Buscar</button>
+      </form>
+    </section>
+    <section class="dashboard-section" id="lista-cartas" aria-labelledby="lista-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Biblioteca</p>
+          <h2 id="lista-title">Cartas salvas</h2>
+        </div>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Raridade (ID)</th>
+              <th>Tipo (ID)</th>
+              <th>Edição</th>
+              <th>Qtd.</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <div class="section-heading" style="margin-top: 40px;">
+            <div>
+              <p class="eyebrow">Visualização</p>
+              <h2>Galeria do Grimório (Grid)</h2>
+            </div>
+          </div>
+          <div class="cards-grid-showcase" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            <div th:each="carta : ${cartasSalvas}" class="visual-card-item" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); text-align: center; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+              <div class="card-image-container" style="text-align: center; position: relative;">
+                
+                <img th:id="'img-' + ${carta.idCarta}" 
+                     th:src="${carta.urlFrente}" 
+                     class="card-img" 
+                     style="max-width: 100%; height: auto; border-radius: 14px; transition: transform 0.3s ease; transform-origin: center; display: block; margin: 0 auto;" />
+                
+                <div th:if="${carta.room or carta.cartaDupla}" style="margin-top: 10px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                
+                    <th:block th:if="${carta.room}">
+                        <button type="button" class="mini-button" style="width: auto; padding: 6px 12px; font-size: 0.85rem; background: #ffaa00; color: #000;"
+                                th:onclick="'rotacionarCarta(' + ${carta.idCarta} + ')'">
+                            🔄 Girar e Ampliar
+                        </button>
+                    </th:block>
+                  
+                    <th:block th:if="${carta.cartaDupla}">
+                        <button type="button" class="ghost-button" style="width: auto; padding: 6px 12px; font-size: 0.85rem;"
+                                th:data-frente="${carta.urlFrente}"
+                                th:data-verso="${carta.urlVerso}"
+                                th:onclick="'virarCarta(this, ' + ${carta.idCarta} + ')'">
+                            🌗 Ver Outro Lado
+                        </button>
+                    </th:block>
+
+                </div>
+              </div>
+              <div th:if="${carta.urlImagem == null || #strings.isEmpty(carta.urlImagem)}" 
+                   style="width: 100%; aspect-ratio: 2.5/3.5; background: linear-gradient(135deg, #2c1b4d, #1a0b2e); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; border: 2px solid #ffaa00;">
+                   <span style="font-size: 2rem; color: #ffaa00; margin-bottom: 10px;">🎴</span>
+                   <strong th:text="${carta.nomeCarta}" style="color: #fff; font-size: 0.9rem;"></strong>
+              </div>
+              <div style="margin-top: 10px;">
+                <strong th:text="${carta.nomeCarta}" style="color: #fff; display:block; font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></strong>
+                <small style="color: #aaa; font-size: 0.8rem;">
+                  <span th:if="${carta.supertipo}" th:text="${carta.supertipo} + ' '"></span>
+                  <span th:text="${carta.poder != null ? '['+carta.poder+'/'+carta.resistencia+']' : ''}"></span>
+                </small>
+                <div style="color: #ffaa00; font-weight: bold; font-size: 0.85rem; margin-top: 4px;" th:text="'Qtd: ' + ${carta.quantidade}"></div>
+              </div>
+            </div>
+          </div>
+          <tbody>
+            <tr th:each="carta : ${cartasSalvas}">
+              <td data-label="Nome" th:text="${carta.nomeCarta}">Nome da Carta</td>
+              <td data-label="Raridade" th:text="${carta.raridade}">Raridade</td>
+              <td data-label="Tipo" th:text="${carta.tipo}">Tipo</td>
+              <td data-label="Edição" th:text="${carta.edicao}">Edição</td>
+              <td data-label="Qtd." th:text="${carta.quantidade}">0</td>
+              <td data-label="Ações">
+                <a th:href="@{/colecao/editar/{id}(id=${carta.idCarta})}" class="mini-button" style="display: inline-block; margin-right: 5px; text-decoration: none; text-align: center; line-height: normal;">Editar</a>
+                <form th:action="@{/colecao/{id}/excluir(id=${carta.idCarta})}" method="post" style="display:inline-block;">
+                  <button class="mini-button danger" type="submit">Excluir</button>
+                </form>
+              </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(cartasSalvas)}">
+              <td colspan="6" style="text-align: center; padding: 20px;">
+                Nenhuma carta encontrada. Registre sua primeira carta acima!
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <p>Arcane Vault — coleção sem valores financeiros, focada em organização acadêmica.</p>
+  </footer>
+  <script th:src="@{/magic-script.js}"></script>
+</body>
+</html>

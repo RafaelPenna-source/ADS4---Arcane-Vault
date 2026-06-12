@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcane Vault | Início</title>
+  <link rel="stylesheet" th:href="@{/magic-theme.css}"/>
+  <link rel="icon" type="image/x-icon" th:href="@{/arcane_vault_icon.svg}">
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="brand" th:href="@{/home}" aria-label="Arcane Vault - Página inicial">
+      <span class="logo-mark">A</span>
+      <span>
+        <strong>Arcane Vault</strong>
+        <small>Grimório do colecionador</small>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a href="#curiosidades">Curiosidades</a>
+      <a href="#recursos">Recursos</a>
+      <a th:href="@{/colecao}">Minha coleção</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <a class="ghost-button" th:href="@{/login}">Sair</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-section" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Após o login</p>
+        <h1 id="hero-title">Bem-vindo ao seu grimório de Magic.</h1>
+
+        <p>
+          Organize suas cartas, registre raridades, tipos e custos de mana,
+          e mantenha sua coleção preparada para consulta e apresentação.
+        </p>
+
+        <div class="hero-actions">
+          <a class="primary-button" th:href="@{/colecao}">Criar e gerenciar coleção</a>
+          <a class="secondary-button" href="#curiosidades">Ver curiosidades</a>
+        </div>
+      </div>
+
+<aside class="summary-panel" aria-label="Resumo da coleção">
+  <div class="panel-header">
+    <span>Resumo</span>
+    <strong>Minha coleção</strong>
+  </div>
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <small>Total de cartas</small>
+      <strong th:text="${totalCartas}">0</strong>
+    </article>
+
+    <article class="stat-card">
+      <small>Cartas diferentes</small>
+      <strong th:text="${cartasDiferentes}">0</strong>
+    </article>
+
+    <article class="stat-card">
+      <small>Raras/Míticas</small>
+      <strong th:text="${rarasMiticas}">0</strong>
+    </article>
+
+    <article class="stat-card">
+      <small>Cores usadas</small>
+      <strong th:text="${coresUsadas}">0</strong>
+    </article>
+  </div>
+</aside>
+    </section>
+
+    <section class="content-section" id="curiosidades" aria-labelledby="curiosidades-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Conhecimento de planeswalker</p>
+          <h2 id="curiosidades-title">Curiosidades sobre Magic</h2>
+        </div>
+      </div>
+
+      <div class="curiosity-grid">
+        <article class="curiosity-card">
+          <span class="feature-icon">✦</span>
+          <h3>Cinco cores de mana</h3>
+          <p>
+            Magic organiza boa parte de sua identidade em cinco cores:
+            branco, azul, preto, vermelho e verde. Cada cor representa uma
+            filosofia de jogo e um estilo de estratégia.
+          </p>
+        </article>
+
+        <article class="curiosity-card">
+          <span class="feature-icon">◆</span>
+          <h3>Raridade importa</h3>
+          <p>
+            As cartas podem ser comuns, incomuns, raras ou míticas.
+            Para colecionadores, raridade ajuda a organizar prioridade,
+            escassez e destaque dentro da coleção.
+          </p>
+        </article>
+
+        <article class="curiosity-card">
+          <span class="feature-icon">★</span>
+          <h3>Tipo define função</h3>
+          <p>
+            Criaturas, mágicas instantâneas, feitiços, artefatos,
+            encantamentos, terrenos e planeswalkers cumprem papéis
+            diferentes dentro de uma partida.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" id="recursos" aria-labelledby="recursos-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Funções principais</p>
+          <h2 id="recursos-title">O que este painel permite fazer</h2>
+        </div>
+      </div>
+
+      <div class="feature-grid two-columns">
+        <article class="feature-card">
+          <span class="feature-icon">☉</span>
+          <h3>Criar cartas na coleção</h3>
+          <p>
+            Cadastre o nome da carta, raridade, tipo, quantidade e custo de mana
+            separado por cor. O valor financeiro não será usado nesta versão.
+          </p>
+          <a class="card-link" th:href="@{/colecao}">Cadastrar cartas</a>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-icon">☾</span>
+          <h3>Gerenciar sua biblioteca</h3>
+          <p>
+            Consulte cartas já cadastradas, filtre por nome, raridade, tipo
+            e cor, e deixe a estrutura pronta para edição e exclusão via Java.
+          </p>
+          <a class="card-link" th:href="@{/colecao#lista-cartas}">Ver coleção</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Arcane Vault — projeto acadêmico em HTML, CSS, Java e SQLite / PostgreSQL.</p>
+  </footer>
+</body>
+</html>

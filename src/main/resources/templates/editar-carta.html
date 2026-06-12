@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcane Vault | Editar Carta</title>
+  <link rel="stylesheet" th:href="@{/magic-theme.css}" />
+  <link rel="icon" type="image/x-icon" th:href="@{/arcane_vault_icon.svg}">
+</head>
+
+<body>
+  <header class="topbar">
+    <a class="brand" th:href="@{/home}" aria-label="Arcane Vault - Página inicial">
+      <span class="logo-mark">A</span>
+      <span>
+        <strong>Arcane Vault</strong>
+        <small>Painel de Edição</small>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a th:href="@{/home}">Início</a>
+      <a th:href="@{/colecao}">Voltar para a Coleção</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-title-section">
+      <p class="eyebrow" th:text="'ID da Carta: ' + ${cards.idCarta}">Modificação</p>
+      <h1>Alterar propriedades da carta</h1>
+      <p>
+        Modifique as informações necessárias nos campos abaixo. As alterações serão aplicadas instantaneamente ao banco de dados assim que você clicar em "Salvar Alterações".
+      </p>
+    </section>
+
+    <section class="form-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Editor</p>
+          <h2>Editando: <span th:text="${cards.nomeCarta}" style="color: var(--primary-color, #ffaa00);">Nome da Carta</span></h2>
+        </div>
+      </div>
+
+      <!-- O th:action aponta dinamicamente para o ID da carta que está sendo editada -->
+      <form class="card-form" th:action="@{/colecao/editar/{id}(id=${cards.idCarta})}" th:object="${cards}" method="post">
+        
+        <!-- Campo oculto para garantir que o ID não se perca no envio -->
+        <input type="hidden" th:field="*{idCarta}" />
+        <input type="hidden" th:field="*{urlImagem}" />
+        <input type="hidden" th:field="*{codigoSet}" />
+        <input type="hidden" th:field="*{codigoVariante}" />
+
+        <div class="form-grid">
+          <div class="field-group wide">
+            <label for="nome-carta">Nome da carta</label>
+            <input th:field="*{nomeCarta}" type="text" placeholder="Ex.: Sol Ring" required />
+          </div>
+
+          <div class="field-group">
+            <label for="raridade">Raridade</label>
+            <select th:field="*{idRaridade}" required>
+              <option value="">Selecione</option>
+              <option value="1">Comum</option>
+              <option value="2">Incomum</option>
+              <option value="3">Rara</option>
+              <option value="4">Mítica</option>
+              <option value="5">Especial</option>
+              <option value="6">Token</option>
+              <option value="7">Promo</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="tipo">Tipo</label>
+            <select th:field="*{idTipo}" required>
+              <option value="">Selecione</option>
+              <option value="1">Criatura</option>
+              <option value="2">Feitiço</option>
+              <option value="3">Mágica Instantânea</option>
+              <option value="4">Artefato</option>
+              <option value="5">Encantamento</option>
+              <option value="6">Terreno</option>
+              <option value="7">Planeswalker</option>
+              <option value="8">Batalha</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="quantidade">Quantidade</label>
+            <input th:field="*{quantidade}" type="number" min="1" required />
+          </div>
+
+          <div class="field-group">
+            <label for="edicao">Edição / coleção</label>
+            <input th:field="*{edicao}" type="text" placeholder="Ex.: Dominaria Remastered" />
+          </div>
+        </div>
+
+        <fieldset class="mana-fieldset">
+          <legend>Custo de mana separado por cor</legend>
+
+          <div class="mana-grid">
+            <div class="field-group mana-field white-mana">
+              <label for="custo-branco">Branco</label>
+              <input th:field="*{custoBranco}" type="number" min="0" />
+            </div>
+
+            <div class="field-group mana-field blue-mana">
+              <label for="custo-azul">Azul</label>
+              <input th:field="*{custoAzul}" type="number" min="0" />
+            </div>
+
+            <div class="field-group mana-field black-mana">
+              <label for="custo-preto">Preto</label>
+              <input th:field="*{custoPreto}" type="number" min="0" />
+            </div>
+
+            <div class="field-group mana-field red-mana">
+              <label for="custo-vermelho">Vermelho</label>
+              <input th:field="*{custoVermelho}" type="number" min="0" />
+            </div>
+
+            <div class="field-group mana-field green-mana">
+              <label for="custo-verde">Verde</label>
+              <input th:field="*{custoVerde}" type="number" min="0" />
+            </div>
+
+            <div class="field-group mana-field colorless-mana">
+              <label for="custo-incolor">Incolor</label>
+              <input th:field="*{custoIncolor}" type="number" min="0" />
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="field-group">
+          <label for="texto-regra">Texto / efeito da carta</label>
+          <textarea th:field="*{textoRegra}" rows="4" placeholder="Descreva o efeito da carta..."></textarea>
+        </div>
+
+        <div class="field-group">
+          <label for="observacoes">Observações</label>
+          <textarea th:field="*{observacoes}" rows="3" placeholder="Estado da carta, idioma, pasta onde está guardada etc."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button class="primary-button" type="submit">Salvar Alterações</button>
+          <a th:href="@{/colecao}" class="secondary-button" style="text-decoration: none; text-align: center; display: inline-flex; align-items: center; justify-content: center;">Cancelar</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Arcane Vault — Modo de Edição Ativo.</p>
+  </footer>
+</body>
+</html>
