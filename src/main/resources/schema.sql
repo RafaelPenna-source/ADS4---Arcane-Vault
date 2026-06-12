@@ -163,8 +163,13 @@ ON colecao_cartas(id_carta);
 -- =========================================================
 -- 7. TRIGGERS
 -- =========================================================
+INSERT INTO usuarios (id_usuario, nome, email, senha_hash)
+VALUES (1, 'admin', 'admin@local', 'x')
+ON CONFLICT (id_usuario) DO NOTHING;
 
-
+INSERT INTO colecoes (id_colecao, id_usuario, nome)
+VALUES (1, 1, 'Coleção Padrão')
+ON CONFLICT (id_colecao) DO NOTHING;
 -- =========================================================
 -- 8. VIEW vw_colecao_completa (Ajustado o alias da url_imagem)
 -- =========================================================
